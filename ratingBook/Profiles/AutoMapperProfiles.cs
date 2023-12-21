@@ -8,8 +8,9 @@ namespace ratingBook.Profiles
     {
         public AutoMapperProfiles()
         {
-            CreateMap<BookDto, Book>();
-            CreateMap<LibraryDto, Library>();
+            CreateMap<Book, BookDto>()
+            .ForMember(dest => dest.LibraryId, opt => opt.MapFrom(src => src.Library.Id));
+
         }
     }
 }

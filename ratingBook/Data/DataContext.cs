@@ -13,7 +13,7 @@ namespace ratingBook.Data
         }
 
         public DbSet<Book> Books { get; set; }
-        public DbSet<Library> Librarys { get; set; }
+        public DbSet<Library> Libraries { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

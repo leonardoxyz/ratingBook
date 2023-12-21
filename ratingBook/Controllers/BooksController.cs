@@ -5,6 +5,11 @@ using ratingBook.Core;
 using ratingBook.Data;
 using ratingBook.Model;
 using ratingBook.Model.Dto;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace ratingBook.Controllers
 {
@@ -26,17 +31,20 @@ namespace ratingBook.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks()
         {
-            var existingBooks = await _bookRepository.GetAll();
+            var existingBooks = await _context.Books.Include(b => b.Library).ToListAsync();
 
             if (existingBooks == null)
             {
                 return BadRequest("Nenhum livro encontrado.");
             }
 
-            return Ok(existingBooks);
+            var booksWithLibraryId = _mapper.Map<IEnumerable<BookDto>>(existingBooks);
+
+            return Ok(booksWithLibraryId);
         }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Book>> GetBook(Guid id)
@@ -84,15 +92,33 @@ namespace ratingBook.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Book>> PostBook ([FromBody] BookDto bookdto)
+        public async Task<ActionResult<Book>> PostBook([FromBody] BookDto bookdto)
         {
+            var book = _mapper.Map<Book>(bookdto);
 
-            var map = _mapper.Map<Book>(bookdto);
-            _context.Books.Add(map);
+            var library = await _context.Libraries.FindAsync(bookdto.LibraryId);
+
+            if (library == null)
+            {
+                return BadRequest("Biblioteca não encontrada.");
+            }
+
+            book.Library = library;
+
+            _context.Books.Add(book);
             await _unitOfWork.SaveChangesAsync();
 
-            var responseBook = _mapper.Map<Book>(map);
-            return Ok(responseBook);
+            var responseBook = _mapper.Map<Book>(book);
+
+            var jsonSerializerOptions = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                MaxDepth = 64,
+            };
+
+            var jsonResponse = JsonSerializer.Serialize(responseBook, jsonSerializerOptions);
+
+            return Ok(jsonResponse);
         }
 
         [HttpDelete("{id}")]
@@ -100,7 +126,7 @@ namespace ratingBook.Controllers
         {
             var existingBook = await _context.Books.FindAsync(id);
 
-            if(existingBook == null)
+            if (existingBook == null)
             {
                 return NotFound();
             }

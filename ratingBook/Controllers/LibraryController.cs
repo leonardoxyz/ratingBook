@@ -26,7 +26,7 @@ namespace ratingBook.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Library>>> GetLibrary()
         {
-            var existingLibrarys = await _context.Librarys.ToListAsync();
+            var existingLibrarys = await _context.Libraries.ToListAsync();
 
             if (existingLibrarys == null || existingLibrarys.Count == 0)
             {
@@ -39,7 +39,7 @@ namespace ratingBook.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Library>> GetLibrary(Guid id)
         {
-            var existingLibrary = await _context.Librarys.FindAsync(id);
+            var existingLibrary = await _context.Libraries.FindAsync(id);
 
             if (existingLibrary == null)
             {
@@ -57,7 +57,7 @@ namespace ratingBook.Controllers
                 return BadRequest("O ID da livraria na rota não corresponde ao ID da livraria no corpo da solicitação.");
             }
 
-            var existingLibrary = await _context.Librarys.FindAsync(id);
+            var existingLibrary = await _context.Libraries.FindAsync(id);
 
             if (existingLibrary == null)
             {
@@ -85,7 +85,7 @@ namespace ratingBook.Controllers
         public async Task<ActionResult<Library>> PostLivrary([FromBody] LibraryDto libraryDto)
         {
             var map = _mapper.Map<Library>(libraryDto);
-            _context.Librarys.Add(map);
+            _context.Libraries.Add(map);
             await _unitOfWork.SaveChangesAsync();
 
             var responseLivrary = _mapper.Map<Library>(map);
@@ -95,14 +95,14 @@ namespace ratingBook.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteLibrary(Guid id)
         {
-            var existingLibrary = await _context.Librarys.FindAsync(id);
+            var existingLibrary = await _context.Libraries.FindAsync(id);
 
             if (existingLibrary == null)
             {
                 return NotFound();
             }
 
-            _context.Librarys.Remove(existingLibrary);
+            _context.Libraries.Remove(existingLibrary);
             await _unitOfWork.SaveChangesAsync();
 
             return NoContent();

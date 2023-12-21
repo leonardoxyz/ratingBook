@@ -4,5 +4,7 @@
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Adress { get; set; } = string.Empty;
+
+        public List<Book> Books { get; set; }
     }
 }
