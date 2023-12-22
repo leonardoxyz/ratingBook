@@ -11,8 +11,8 @@ using ratingBook.Data;
 namespace ratingBook.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231221020423_Relacionamento")]
-    partial class Relacionamento
+    [Migration("20231222172611_First")]
+    partial class First
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,7 +53,7 @@ namespace ratingBook.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Adress")
+                    b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

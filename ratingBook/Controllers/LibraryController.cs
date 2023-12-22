@@ -26,14 +26,16 @@ namespace ratingBook.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Library>>> GetLibrary()
         {
-            var existingLibrarys = await _context.Libraries.ToListAsync();
+            var existingLibraries = await _context.Libraries.Include(l => l.Books).ToListAsync();
 
-            if (existingLibrarys == null || existingLibrarys.Count == 0)
+            if (existingLibraries == null || existingLibraries.Count == 0)
             {
-                return BadRequest("Nenhuma livraria encontrado.");
+                return BadRequest("Nenhuma livraria encontrada.");
             }
 
-            return Ok(existingLibrarys);
+            var librariesWithBooks = _mapper.Map<IEnumerable<Library>>(existingLibraries);
+
+            return Ok(librariesWithBooks);
         }
 
         [HttpGet("{id}")]
@@ -87,9 +89,7 @@ namespace ratingBook.Controllers
             var map = _mapper.Map<Library>(libraryDto);
             _context.Libraries.Add(map);
             await _unitOfWork.SaveChangesAsync();
-
-            var responseLivrary = _mapper.Map<Library>(map);
-            return Ok(responseLivrary);
+            return Ok(map);
         }
 
         [HttpDelete("{id}")]

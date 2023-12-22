@@ -9,8 +9,8 @@ namespace ratingBook.Profiles
         public AutoMapperProfiles()
         {
             CreateMap<Book, BookDto>()
-            .ForMember(dest => dest.LibraryId, opt => opt.MapFrom(src => src.Library.Id));
-
+                            .ReverseMap();
+            CreateMap<Library, LibraryDto>().ReverseMap();
         }
     }
 }
